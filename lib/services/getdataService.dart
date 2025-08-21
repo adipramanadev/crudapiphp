@@ -14,7 +14,8 @@ class GetDataServices{
     final response = await http.get(url);
     
     if (response.statusCode == 200) {
-      return GetData.fromJson(jsonDecode(response.body));
+      print(GetData.fromJson(jsonDecode(response.body)));
+      return GetData.fromJson(jsonDecode(response.body)['data']);
     } else {
       throw Exception('Failed to load data');
     }
