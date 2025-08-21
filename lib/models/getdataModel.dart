@@ -1,50 +1,35 @@
-class GetData {
-  List<Data>? data;
+class Item {
+  final String id;
+  final String itemCode;
+  final String itemName;
+  final String price;
+  final String stock;
 
-  GetData({this.data});
+  Item({
+    required this.id,
+    required this.itemCode,
+    required this.itemName,
+    required this.price,
+    required this.stock,
+  });
 
-  GetData.fromJson(Map<String, dynamic> json) {
-    if (json['data'] != null) {
-      data = <Data>[];
-      json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
+  factory Item.fromJson(Map<String, dynamic> j) => Item(
+    id: j['id']?.toString() ?? '',
+    itemCode: j['item_code']?.toString() ?? '',
+    itemName: j['item_name']?.toString() ?? '',
+    price: j['price']?.toString() ?? '0',
+    stock: j['stock']?.toString() ?? '0',
+  );
 }
 
-class Data {
-  String? id;
-  String? itemCode;
-  String? itemName;
-  String? price;
-  String? stock;
+class GetData {
+  final List<Item> data;
+  GetData({required this.data});
 
-  Data({this.id, this.itemCode, this.itemName, this.price, this.stock});
-
-  Data.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    itemCode = json['item_code'];
-    itemName = json['item_name'];
-    price = json['price'];
-    stock = json['stock'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['item_code'] = this.itemCode;
-    data['item_name'] = this.itemName;
-    data['price'] = this.price;
-    data['stock'] = this.stock;
-    return data;
+  factory GetData.fromJson(Map<String, dynamic> j) {
+    final list = (j['data'] as List? ?? []);
+    return GetData(
+      data: list.map((e) => Item.fromJson(e as Map<String, dynamic>)).toList(),
+    );
   }
 }
