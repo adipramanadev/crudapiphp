@@ -29,6 +29,7 @@ class _AddpageState extends State<Addpage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.orangeAccent,
         title: const Text('Add Item', style: TextStyle(color: Colors.white)),
         leading: IconButton(
