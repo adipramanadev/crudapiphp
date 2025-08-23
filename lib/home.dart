@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
+import 'package:crudapiphp/addpage.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -12,7 +13,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  late Future<List<Map<String, dynamic>>> _future;
+  late Future<List<Map<String, dynamic>>> _future; //get data api
 
   // Pilih host sesuai platform (biar gak gagal di emulator/device)
   String _host() {
@@ -23,7 +24,8 @@ class _HomeState extends State<Home> {
 
   // GET data -> List<Map>
   Future<List<Map<String, dynamic>>> _getData() async {
-    final url = Uri.parse('${_host()}/apiphp/getdata.php');
+    final uri = _host();
+    final url = Uri.parse('$uri/apiphp/getdata.php');
     final response = await http.get(url);
 
     if (response.statusCode != 200) {
@@ -49,8 +51,11 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> _refresh() async {
-    setState(() => _future = _getData());
-    await _future;
+    final newFuture = _getData();
+    setState(() {
+      _future = newFuture;
+    });
+    await newFuture; // ini biar RefreshIndicator bisa stop animasi
   }
 
   @override
@@ -76,6 +81,19 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
+      //add floating action button 
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Add your onPressed code here!
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const Addpage(),
+            ),
+          );
+        },
+        backgroundColor: Colors.orangeAccent,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _future,
         builder: (context, snap) {
@@ -89,11 +107,22 @@ class _HomeState extends State<Home> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: Colors.redAccent,
+                    ),
                     const SizedBox(height: 12),
-                    Text('Gagal memuat data', style: theme.textTheme.titleMedium),
+                    Text(
+                      'Gagal memuat data',
+                      style: theme.textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 8),
-                    Text('${snap.error}', textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
+                    Text(
+                      '${snap.error}',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodySmall,
+                    ),
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
                       onPressed: _refresh,
@@ -114,11 +143,18 @@ class _HomeState extends State<Home> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.inventory_2_outlined, size: 48, color: Colors.grey),
+                    const Icon(
+                      Icons.inventory_2_outlined,
+                      size: 48,
+                      color: Colors.grey,
+                    ),
                     const SizedBox(height: 12),
                     Text('Belum ada data', style: theme.textTheme.titleMedium),
                     const SizedBox(height: 8),
-                    Text('Tambahkan item baru di server kamu.', style: theme.textTheme.bodySmall),
+                    Text(
+                      'Tambahkan item baru di server kamu.',
+                      style: theme.textTheme.bodySmall,
+                    ),
                   ],
                 ),
               ),
@@ -136,13 +172,23 @@ class _HomeState extends State<Home> {
                 final name = (it['item_name'] as String?)?.trim() ?? '';
                 final code = (it['item_code'] as String?)?.trim() ?? '';
                 final price = (it['price'] as String?) ?? '0';
-                final stock = int.tryParse((it['stock'] as String?) ?? '0') ?? 0;
+                final stock =
+                    int.tryParse((it['stock'] as String?) ?? '0') ?? 0;
 
                 return Card(
+                  //backgroundColor: Colors.white,
+
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  color: Colors.white,
+                  shadowColor: Colors.grey.shade600,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     leading: CircleAvatar(
                       radius: 24,
                       backgroundColor: Colors.orange.shade100,
@@ -153,7 +199,9 @@ class _HomeState extends State<Home> {
                     ),
                     title: Text(
                       name.isEmpty ? '(tanpa nama)' : name,
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,19 +215,28 @@ class _HomeState extends State<Home> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
-                            color: stock > 0 ? Colors.green.shade50 : Colors.red.shade50,
+                            color: stock > 0
+                                ? Colors.green.shade50
+                                : Colors.red.shade50,
                             borderRadius: BorderRadius.circular(999),
                             border: Border.all(
-                              color: stock > 0 ? Colors.green.shade300 : Colors.red.shade300,
+                              color: stock > 0
+                                  ? Colors.green.shade300
+                                  : Colors.red.shade300,
                             ),
                           ),
                           child: Text(
                             'Stok: $stock',
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: stock > 0 ? Colors.green.shade700 : Colors.red.shade700,
+                              color: stock > 0
+                                  ? Colors.green.shade700
+                                  : Colors.red.shade700,
                             ),
                           ),
                         ),
@@ -189,7 +246,9 @@ class _HomeState extends State<Home> {
                       showModalBottomSheet(
                         context: context,
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
                         ),
                         builder: (_) => Padding(
                           padding: const EdgeInsets.all(20),
@@ -197,8 +256,12 @@ class _HomeState extends State<Home> {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(name.isEmpty ? '(tanpa nama)' : name,
-                                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                              Text(
+                                name.isEmpty ? '(tanpa nama)' : name,
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                               const SizedBox(height: 8),
                               Text('Kode barang: ${code.isEmpty ? '-' : code}'),
                               Text('Harga: ${_formatPrice(price)}'),

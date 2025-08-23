@@ -1,91 +1,112 @@
-# crudapiphp — Belajar CRUD API dengan PHP & Flutter
+# Flutter CRUD with PHP API
 
-Repository ini adalah project Flutter sederhana dengan backend API berbasis PHP. Cocok untuk belajar bagaimana cara melakukan operasi **CRUD** (Create, Read, Update, Delete) melalui API di Flutter.
+A simple Flutter project demonstrating CRUD operations using PHP REST API backend.
 
----
-
-##  Struktur Proyek
+## Project Structure
 
 ```
-
 crudapiphp/
-├── android/
-├── ios/
-├── lib/             ← Kode utama Flutter (UI, model, service)
-├── web/
-├── api/             ← (Tambahkan jika ada) file PHP: getdata.php, add.php, update.php, delete.php
-├── README.md        ← Dokumentasi ini
-└── pubspec.yaml
+├── android/            # Android specific files
+├── ios/               # iOS specific files
+├── lib/               # Flutter source code
+│   ├── home.dart      # Home screen UI and logic
+│   ├── addpage.dart   # Add item screen
+│   └── main.dart      # Entry point
+├── web/               # Web specific files
+├── server/            # PHP API files
+│   ├── getdata.php    # Read operation
+│   ├── add.php        # Create operation
+│   ├── update.php     # Update operation
+│   ├── delete.php     # Delete operation
+│   └── conn.php       # Database connection
+├── pubspec.yaml       # Flutter dependencies
+└── README.md         # Project documentation
+```
 
-````
+## Features
 
----
+- ✅ Create new items with name, code, price, and stock
+- 📖 Read and display items in a list
+- 🔄 Update existing items
+- ❌ Delete items
+- 💅 Clean and responsive UI
+- 🌐 Cross-platform support (Android, iOS, Web)
 
-##  Apa yang Akan Kamu Pelajari
+## Setup Instructions
 
-| Topik                     | Penjelasan Singkat |
-|--------------------------|---------------------|
-| Backend PHP (REST API)   | Menyediakan endpoint CRUD (MySQL + PHP) |
-| Flutter HTTP + JSON      | Mengakses dan parsing respon API |
-| Model & Service Layer    | Struktur data (model) dan komunikasi network (service) |
-| UI di Flutter            | Menampilkan data dalam daftar, menambah, edit, dan hapus data |
-| Error Handling UI        | Menampilkan error dan loading di UI (FutureBuilder, retry, dsb) |
+### 1. Database Setup
+```sql
+CREATE TABLE items (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    item_name VARCHAR(100) NOT NULL,
+    item_code VARCHAR(50) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    stock INT NOT NULL
+);
+```
 
----
+### 2. PHP Backend Setup
 
-##  Quick Start
+1. Install XAMPP/WAMP server
+2. Copy the `server` folder contents to:
+   - XAMPP: `C:/xampp/htdocs/apiphp/`
+   - WAMP: `C:/wamp64/www/apiphp/`
+3. Update database credentials in `conn.php`
 
-1. **Clone repo & checkout branch `devBook`:**  
-   ```bash
-   git clone <URL> 
-   cd crudapiphp
-   git checkout devBook
-````
+### 3. Flutter Setup
 
-2. **Setup Backend API:**
+```bash
+# Get dependencies
+flutter pub get
 
-   * Letakkan file `getdata.php`, `add.php`, `update.php`, `delete.php`, dan `conn.php` di dalam folder `api/` (jika belum ada).
-   * Gunakan XAMPP atau server lokal dan pastikan API berfungsi (tes via Postman atau browser).
+# Run the app
+flutter run
+```
 
-3. **Jalankan Flutter App:**
+## API Endpoints
 
-   ```bash
-   flutter pub get
-   flutter run
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| /getdata.php | GET | Fetch all items |
+| /add.php | POST | Create new item |
+| /update.php | POST | Update existing item |
+| /delete.php | POST | Delete an item |
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Connection Refused**
+   - Ensure PHP server is running
+   - Check correct host:
+     - Android Emulator: `10.0.2.2`
+     - iOS Simulator: `localhost`
+     - Web: `localhost`
+
+2. **CORS Issues (Web)**
+   Add to PHP files:
+   ```php
+   header('Access-Control-Allow-Origin: *');
+   header('Access-Control-Allow-Methods: GET, POST');
+   header('Access-Control-Allow-Headers: Content-Type');
    ```
 
+### Development Tips
 
-
----
-
-## Tips Tambahan
-
-* **CORS untuk Flutter Web:**
-  Jika kamu pakai Flutter Web, tambahkan header berikut di tiap file PHP:
-
+- Enable PHP error reporting for debugging:
   ```php
-  header('Access-Control-Allow-Origin: *');
-  header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-  header('Access-Control-Allow-Headers: Content-Type, Authorization');
-  if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') exit;
+  error_reporting(E_ALL);
+  ini_set('display_errors', 1);
   ```
+- Use Postman to test API endpoints
+- Check Flutter DevTools for network requests
 
-* **HTTP vs HTTPS**:
-  Pastikan `http://` tetap konsisten—ketidaksesuaian protokol dapat menyebabkan client exception (mixed content).
+## Dependencies
 
-* **Debugging:**
-  Aktifkan `error_reporting(E_ALL)` untuk lebih mudah menemukan bug di PHP.
+- http: ^1.1.0
+- flutter: sdk: flutter
 
----
+## License
 
-## Tujuan
-
-Setelah memahami project ini, kamu akan bisa:
-
-* Membuat REST API CRUD sederhana dengan PHP & MySQL
-* Kelola state di Flutter untuk berinteraksi dengan API
-* Optimasi UI/UX minimal (loading, error handling, refresh)
-
-
----
+This project is open-sourced under the MIT license.
 
